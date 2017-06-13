@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
+import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,6 +23,7 @@ public class Main extends Application{
     private static Person min = null;
     private static int bug = 0;
     Main [] m = new Main [3];
+    Label response;
     public void start(Stage stage) {
         stage.setTitle("Laba06");
         GridPane root = new GridPane();
@@ -36,7 +38,7 @@ public class Main extends Application{
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPrefWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPrefWidth(300);
+        col2.setPrefWidth(250);
         RowConstraints row1 = new RowConstraints();
         row1.setPrefHeight(70);
         RowConstraints row2 = new RowConstraints();
@@ -58,10 +60,37 @@ public class Main extends Application{
                 exit();
             }
         });
+        response = new Label("No selection");
+        TreeItem<String> tiRoot = new TreeItem<String>("Food");
+        TreeItem<String> tiFruit = new TreeItem<String>("Fruit");
+        TreeItem<String> tiApples = new TreeItem<String>("Apples");
+        tiApples.getChildren().add(new TreeItem<String>("Abc"));
+        tiApples.getChildren().add(new TreeItem<String>("Cde"));
+        tiApples.getChildren().add(new TreeItem<String>("Dfe"));
+        tiFruit.getChildren().add(tiApples);
+        tiFruit.getChildren().add(new TreeItem<String>("Pears"));
+        tiFruit.getChildren().add(new TreeItem<String>("Oranges"));
+        tiRoot.getChildren().add(tiFruit);
+        tiRoot.getChildren().add(new TreeItem<String>("Vegetables"));
+        TreeView<String> tvFood = new TreeView<String>(tiRoot);
+        MultipleSelectionModel<TreeItem<String>> tvSelModel = tvFood.getSelectionModel();
+        tvSelModel.selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+            public void changed(ObservableValue<? extends TreeItem<String>> changed, TreeItem<String> oldVal, TreeItem<String> newVal) {
+                if (newVal != null) {
+                    String path = newVal.getValue();
+                    TreeItem<String> tmp = newVal.getParent();
+                    while (tmp != null) {
+                        path = tmp.getValue() + " -> " + path;
+                        tmp = tmp.getParent();
+                    }
+                    response.setText("Selection is " + newVal.getValue() + "\n\nComplete path: \n" + path);
+                }
+            }
+        });
         hbox00.getChildren().addAll();
         pane01.getChildren().addAll(bar);
         pane10.getChildren().addAll(datePick);
-        pane11.getChildren().addAll();
+        pane11.getChildren().addAll(tvFood, response);
         pane20.getChildren().addAll();
         pane21.getChildren().addAll(exit);
         root.add(hbox00, 0,0);
@@ -70,7 +99,7 @@ public class Main extends Application{
         root.add(pane11, 1, 1);
         root.add(pane20, 0, 2);
         root.add(pane21, 1, 2);
-        Scene scene = new Scene(root, 900,640);
+        Scene scene = new Scene(root, 850,640);
         stage.setScene(scene);
         stage.show();
     }
