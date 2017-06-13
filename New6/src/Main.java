@@ -1,19 +1,83 @@
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Vector;
 import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import javafx.application.Application;
+import javafx.event.*;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 /**
  * @author Elizabeth, P3111 :)
  */
 
-public class Main {
+public class Main extends Application{
     private static Vector<Person> vector = new Vector();
     private static String file = "";
     private static Person min = null;
     private static int bug = 0;
     Main [] m = new Main [3];
+    public void start(Stage stage) {
+        stage.setTitle("Laba06");
+        GridPane root = new GridPane();
+        HBox hbox00 = new HBox(10);
+        FlowPane pane01 = new FlowPane(10,10);
+        FlowPane pane10 = new FlowPane(10,10);
+        FlowPane pane11 = new FlowPane(10,10);
+        FlowPane pane20 = new FlowPane(10,10);
+        FlowPane pane21 = new FlowPane(10,10);
+        pane01.setAlignment(Pos.CENTER);
+        pane21.setAlignment(Pos.CENTER);
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPrefWidth(600);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPrefWidth(300);
+        RowConstraints row1 = new RowConstraints();
+        row1.setPrefHeight(70);
+        RowConstraints row2 = new RowConstraints();
+        row2.setPrefHeight(500);
+        RowConstraints row3 = new RowConstraints();
+        row3.setPrefHeight(70);
+        root.getColumnConstraints().addAll(col1, col2);
+        root.getRowConstraints().addAll(row1, row2, row3);
+        root.setGridLinesVisible(true);
+        ProgressBar bar = new ProgressBar();
+        DatePicker datePick = new DatePicker();
+        datePick.setValue(LocalDate.of(2017,6,14));
+        datePick.setShowWeekNumbers(true);
+        ProgressBar prBar = new ProgressBar();
+        Button exit = new Button("Exit");
+        exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                exit();
+            }
+        });
+        hbox00.getChildren().addAll();
+        pane01.getChildren().addAll(bar);
+        pane10.getChildren().addAll(datePick);
+        pane11.getChildren().addAll();
+        pane20.getChildren().addAll();
+        pane21.getChildren().addAll(exit);
+        root.add(hbox00, 0,0);
+        root.add(pane01, 1, 0);
+        root.add(pane10, 0, 1);
+        root.add(pane11, 1, 1);
+        root.add(pane20, 0, 2);
+        root.add(pane21, 1, 2);
+        Scene scene = new Scene(root, 900,640);
+        stage.setScene(scene);
+        stage.show();
+    }
+    private static void exit() {
+        System.out.println("Bye!");
+        System.exit(1);
+    }
     private static void outVector() {
         for (int i = 0; i < vector.size(); i++) {
             System.out.println(i + " " + vector.get(i));
@@ -168,6 +232,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        launch(args);
         if (args.length != 1) {
             System.out.println("Incorrect amount of arguments");
             System.exit(404);
@@ -182,7 +247,7 @@ public class Main {
                                                      String str = "";
                                                      FileWriter out = null;
                                                      try {
-                                                         out = new FileWriter("../Proba.csv", false);
+                                                         out = new FileWriter("../../Proba.csv", false);
                                                          for (Person person:vector) {
                                                              for (int n = 0; n < person.phrases.size(); n++) {
                                                                  str = str.concat(";" + person.getPhrase(n));
@@ -254,5 +319,7 @@ public class Main {
         outVector();
     }
 }
+
+
 
 //C:\Users\Elizabeth\Desktop\ИТМО\Программирование\Лабораторные\Лаба05\Proba.csv
