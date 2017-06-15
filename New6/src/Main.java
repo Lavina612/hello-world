@@ -19,11 +19,9 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
     private static Vector<Person> vector = new Vector();
-    private static String file = "";
     private static Person min = null;
     private static int bug = 0;
-    Main [] m = new Main [3];
-    Label response;
+    private static Label response;
     public void start(Stage stage) {
         stage.setTitle("Laba06");
         GridPane root = new GridPane();
@@ -35,6 +33,7 @@ public class Main extends Application{
         FlowPane pane21 = new FlowPane(10,10);
         pane01.setAlignment(Pos.CENTER);
         pane21.setAlignment(Pos.CENTER);
+        pane11.setAlignment(Pos.TOP_CENTER);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPrefWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -60,20 +59,48 @@ public class Main extends Application{
                 exit();
             }
         });
+        load();
+        rewriting(pane11);
+        hbox00.getChildren().addAll();
+        pane01.getChildren().addAll(bar);
+        pane10.getChildren().addAll(datePick);
+        pane11.getChildren().addAll();
+        pane20.getChildren().addAll();
+        pane21.getChildren().addAll(exit);
+        root.add(hbox00, 0,0);
+        root.add(pane01, 1, 0);
+        root.add(pane10, 0, 1);
+        root.add(pane11, 1, 1);
+        root.add(pane20, 0, 2);
+        root.add(pane21, 1, 2);
+        Scene scene = new Scene(root, 850,640);
+        stage.setScene(scene);
+        stage.show();
+    }
+    private static void rewriting(FlowPane pane11) {
         response = new Label("No selection");
-        TreeItem<String> tiRoot = new TreeItem<String>("Food");
-        TreeItem<String> tiFruit = new TreeItem<String>("Fruit");
-        TreeItem<String> tiApples = new TreeItem<String>("Apples");
-        tiApples.getChildren().add(new TreeItem<String>("Abc"));
-        tiApples.getChildren().add(new TreeItem<String>("Cde"));
-        tiApples.getChildren().add(new TreeItem<String>("Dfe"));
-        tiFruit.getChildren().add(tiApples);
-        tiFruit.getChildren().add(new TreeItem<String>("Pears"));
-        tiFruit.getChildren().add(new TreeItem<String>("Oranges"));
-        tiRoot.getChildren().add(tiFruit);
-        tiRoot.getChildren().add(new TreeItem<String>("Vegetables"));
-        TreeView<String> tvFood = new TreeView<String>(tiRoot);
-        MultipleSelectionModel<TreeItem<String>> tvSelModel = tvFood.getSelectionModel();
+        TreeItem<String> tiRoot = new TreeItem<>("Persons");
+        for (int i=0; i<vector.size(); i++) {
+            TreeItem<String> tiPerson = new TreeItem<> ("Person " + (i+1));
+            tiRoot.getChildren().add(tiPerson);
+            TreeItem<String> tiName = new TreeItem<> ("Name");
+            tiPerson.getChildren().add(tiName);
+            tiName.getChildren().add(new TreeItem<>(vector.get(i).getName()));
+            if (!vector.get(i).getPhrases().isEmpty()) {
+                TreeItem<String> tiPhrases = new TreeItem<>("Phrases");
+                tiPerson.getChildren().add(tiPhrases);
+                for(int j=0; j<vector.get(i).getPhrases().size(); j++) {
+                    TreeItem<String> tiPhrase = new TreeItem<>("Phrase " + (j+1));
+                    tiPhrases.getChildren().add(tiPhrase);
+                    if(vector.get(i).getPhrases().get(j).getPhrase().isEmpty()) {
+                        tiPhrase.getChildren().add(new TreeItem<String>("I was silent!"));
+                    } else
+                    tiPhrase.getChildren().add(new TreeItem<String>(vector.get(i).getPhrases().get(j).getPhrase()));
+                }
+            }
+        }
+        TreeView<String> tvPerson = new TreeView<>(tiRoot);
+ /*       MultipleSelectionModel<TreeItem<String>> tvSelModel = tvPerson.getSelectionModel();
         tvSelModel.selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
             public void changed(ObservableValue<? extends TreeItem<String>> changed, TreeItem<String> oldVal, TreeItem<String> newVal) {
                 if (newVal != null) {
@@ -86,22 +113,8 @@ public class Main extends Application{
                     response.setText("Selection is " + newVal.getValue() + "\n\nComplete path: \n" + path);
                 }
             }
-        });
-        hbox00.getChildren().addAll();
-        pane01.getChildren().addAll(bar);
-        pane10.getChildren().addAll(datePick);
-        pane11.getChildren().addAll(tvFood, response);
-        pane20.getChildren().addAll();
-        pane21.getChildren().addAll(exit);
-        root.add(hbox00, 0,0);
-        root.add(pane01, 1, 0);
-        root.add(pane10, 0, 1);
-        root.add(pane11, 1, 1);
-        root.add(pane20, 0, 2);
-        root.add(pane21, 1, 2);
-        Scene scene = new Scene(root, 850,640);
-        stage.setScene(scene);
-        stage.show();
+        });  */
+        pane11.getChildren().addAll(tvPerson, response);
     }
     private static void exit() {
         System.out.println("Bye!");
@@ -192,10 +205,7 @@ public class Main extends Application{
         int c;
         String str = "";
         String[] strs;
-        try {
-            File f = new File(file);
-            System.out.println(f.getAbsolutePath());
-            in = new InputStreamReader(new FileInputStream(f));
+        try {in = new InputStreamReader(new FileInputStream("../../Proba.csv"));
             while ((c = in.read()) != -1) {
                 if (c == '\n' || c == '\r' ) {
                     if(!str.trim().equals("")) {
@@ -262,13 +272,9 @@ public class Main extends Application{
 
     public static void main(String[] args) {
         launch(args);
-        if (args.length != 1) {
-            System.out.println("Incorrect amount of arguments");
-            System.exit(404);
-        }
+
         String s;
         Scanner scanner = new Scanner(System.in);
-        file = args[0];
         load();
         getMin();
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -278,7 +284,7 @@ public class Main extends Application{
                                                      try {
                                                          out = new FileWriter("../../Proba.csv", false);
                                                          for (Person person:vector) {
-                                                             for (int n = 0; n < person.phrases.size(); n++) {
+                                                             for (int n = 0; n < person.getPhrases().size(); n++) {
                                                                  str = str.concat(";" + person.getPhrase(n));
                                                              }
                                                              str = person.getName().concat(str + '\r' + '\n');

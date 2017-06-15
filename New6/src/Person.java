@@ -5,10 +5,13 @@ import java.util.*;
 
 public class Person implements Comparable <Person> {
     private String name;
-    protected ArrayList<Phrase> phrases;
+    private ArrayList<Phrase> phrases;
 
     public int compareTo(Person person1) {
        return this.name.length() == person1.name.length() ? this.name.compareTo(person1.name) : this.name.length()-person1.name.length();
+    }
+    public ArrayList<Phrase> getPhrases() {
+        return phrases;
     }
     public void addPhrase(Phrase phrs){
         phrases.add(phrs);}
