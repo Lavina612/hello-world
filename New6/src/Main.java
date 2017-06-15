@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.image.*;
 import javafx.stage.Stage;
 
 /**
@@ -22,28 +23,36 @@ public class Main extends Application{
     private static Person min = null;
     private static int bug = 0;
     private static Label response;
+    private static Label checkBox;
+    private static Label question;
+    private static CheckBox chb1;
+    private static CheckBox chb2;
+    private static CheckBox chb3;
+    private static Label iWant;
     public void start(Stage stage) {
         stage.setTitle("Laba06");
         GridPane root = new GridPane();
-        HBox hbox00 = new HBox(10);
+        HBox hbox00 = new HBox(15);
         FlowPane pane01 = new FlowPane(10,10);
         FlowPane pane10 = new FlowPane(10,10);
         FlowPane pane11 = new FlowPane(10,10);
-        FlowPane pane20 = new FlowPane(10,10);
+        FlowPane pane20 = new FlowPane(20,15);
         FlowPane pane21 = new FlowPane(10,10);
+        hbox00.setAlignment(Pos.CENTER);
         pane01.setAlignment(Pos.CENTER);
         pane21.setAlignment(Pos.CENTER);
         pane11.setAlignment(Pos.TOP_CENTER);
+        pane20.setAlignment(Pos.CENTER);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPrefWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
         col2.setPrefWidth(250);
         RowConstraints row1 = new RowConstraints();
-        row1.setPrefHeight(70);
+        row1.setPrefHeight(50);
         RowConstraints row2 = new RowConstraints();
         row2.setPrefHeight(500);
         RowConstraints row3 = new RowConstraints();
-        row3.setPrefHeight(70);
+        row3.setPrefHeight(50);
         root.getColumnConstraints().addAll(col1, col2);
         root.getRowConstraints().addAll(row1, row2, row3);
         root.setGridLinesVisible(true);
@@ -59,13 +68,71 @@ public class Main extends Application{
                 exit();
             }
         });
+        checkBox = new Label("");
+        question = new Label("Will you give me a variant for laba 8?");
+        chb1 = new CheckBox("Yes");
+        chb2 = new CheckBox("Of course");
+        chb3 = new CheckBox ("Absolutely");
+        chb1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (chb1.isSelected())
+                    checkBox.setText("Thank you!");
+                else checkBox.setText("Don't remove this stick");
+            }
+        });
+        chb2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (chb2.isSelected())
+                    checkBox.setText("Thank you very much!");
+                else checkBox.setText("Don't remove this stick!");
+            }
+        });
+        chb3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (chb3.isSelected())
+                    checkBox.setText("It's so nice! You're so kind!");
+                else checkBox.setText("Don't remove this stick!!!");
+            }
+        });
+        iWant = new Label ("I want to see...");
+        RadioButton rb1 = new RadioButton("VT");
+        RadioButton rb2 = new RadioButton("");
+        RadioButton rb3 = new RadioButton("my photo");
+        ToggleGroup tg = new ToggleGroup();
+        rb1.setToggleGroup(tg);
+        rb2.setToggleGroup(tg);
+        rb3.setToggleGroup(tg);
+        rb1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+  /*              if(rb1.isSelected()) {
+                    Image im1 = new Image("file:///C:\\Users\\Elizabeth\\Desktop\\IMG_20170516_132602.jpg");
+                    ImageView imv1 = new ImageView(im1);
+                    root.getChildren().add(imv1);
+                } */
+            }
+        });
+        rb2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
+        rb3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
         load();
         rewriting(pane11);
-        hbox00.getChildren().addAll();
+        hbox00.getChildren().addAll(question,chb1,chb2,chb3,checkBox);
         pane01.getChildren().addAll(bar);
         pane10.getChildren().addAll(datePick);
-        pane11.getChildren().addAll();
-        pane20.getChildren().addAll();
+        pane20.getChildren().addAll(iWant, rb1, rb2, rb3);
         pane21.getChildren().addAll(exit);
         root.add(hbox00, 0,0);
         root.add(pane01, 1, 0);
@@ -73,7 +140,7 @@ public class Main extends Application{
         root.add(pane11, 1, 1);
         root.add(pane20, 0, 2);
         root.add(pane21, 1, 2);
-        Scene scene = new Scene(root, 850,640);
+        Scene scene = new Scene(root, 850,600);
         stage.setScene(scene);
         stage.show();
     }
