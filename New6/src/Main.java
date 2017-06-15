@@ -29,20 +29,30 @@ public class Main extends Application{
     private static CheckBox chb2;
     private static CheckBox chb3;
     private static Label iWant;
+    private static Button close;
+    private static Button load;
+    private static Button remove_last;
+    private static Button remove;
+    private static Button add_if_min;
+    private static FlowPane image;
+    private static GridPane root;
+    private static FlowPane pane20;
     public void start(Stage stage) {
         stage.setTitle("Laba06");
-        GridPane root = new GridPane();
+        root = new GridPane();
         HBox hbox00 = new HBox(15);
         FlowPane pane01 = new FlowPane(10,10);
         FlowPane pane10 = new FlowPane(10,10);
         FlowPane pane11 = new FlowPane(10,10);
-        FlowPane pane20 = new FlowPane(20,15);
+        pane20 = new FlowPane(20,15);
         FlowPane pane21 = new FlowPane(10,10);
+        image = new FlowPane();
         hbox00.setAlignment(Pos.CENTER);
         pane01.setAlignment(Pos.CENTER);
         pane21.setAlignment(Pos.CENTER);
         pane11.setAlignment(Pos.TOP_CENTER);
         pane20.setAlignment(Pos.CENTER);
+        image.setAlignment(Pos.CENTER);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPrefWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -66,6 +76,33 @@ public class Main extends Application{
             @Override
             public void handle(ActionEvent event) {
                 exit();
+            }
+        });
+        Image im1 = new Image("/images/123.jpg");
+        ImageView imv1 = new ImageView(im1);
+        imv1.setPreserveRatio(true);
+        imv1.setFitHeight(400);
+        imv1.setFitWidth(400);
+        Image im2 = new Image("/images/вт2.jpg");
+        ImageView imv2 = new ImageView(im2);
+        imv2.setPreserveRatio(true);
+        imv2.setFitHeight(400);
+        imv2.setFitWidth(400);
+        Image im3 = new Image("/images/778.jpg");
+        ImageView imv3 = new ImageView(im3);
+        imv3.setPreserveRatio(true);
+        imv3.setFitHeight(400);
+        imv3.setFitWidth(400);
+        Image im4 = new Image("/images/Письмак.jpg");
+        ImageView imv4 = new ImageView(im4);
+        imv4.setPreserveRatio(true);
+        imv4.setFitHeight(400);
+        imv4.setFitWidth(400);
+        close = new Button("close");
+        close.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                root.getChildren().remove(image);
             }
         });
         checkBox = new Label("");
@@ -99,40 +136,46 @@ public class Main extends Application{
         });
         iWant = new Label ("I want to see...");
         RadioButton rb1 = new RadioButton("VT");
-        RadioButton rb2 = new RadioButton("");
-        RadioButton rb3 = new RadioButton("my photo");
+        RadioButton rb2 = new RadioButton("duck");
+        RadioButton rb3 = new RadioButton("our dreams");
+        RadioButton rb4 = new RadioButton("my photo");
         ToggleGroup tg = new ToggleGroup();
         rb1.setToggleGroup(tg);
         rb2.setToggleGroup(tg);
         rb3.setToggleGroup(tg);
+        rb4.setToggleGroup(tg);
         rb1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-  /*              if(rb1.isSelected()) {
-                    Image im1 = new Image("file:///C:\\Users\\Elizabeth\\Desktop\\IMG_20170516_132602.jpg");
-                    ImageView imv1 = new ImageView(im1);
-                    root.getChildren().add(imv1);
-                } */
-            }
+                imagination(imv1, imv4, imv2, imv3);}
         });
         rb2.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
-            }
+                imagination(imv2, imv1, imv4, imv3);}
         });
         rb3.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
+                imagination(imv3, imv1, imv2, imv4);
             }
         });
+        rb4.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                imagination(imv4, imv1, imv2, imv3);
+            }
+        });
+        load = new Button ("load");
+        remove_last = new Button ("remove last element");
+        remove = new Button ("remove (index)");
+        add_if_min = new Button ("add if min");
         load();
         rewriting(pane11);
         hbox00.getChildren().addAll(question,chb1,chb2,chb3,checkBox);
         pane01.getChildren().addAll(bar);
         pane10.getChildren().addAll(datePick);
-        pane20.getChildren().addAll(iWant, rb1, rb2, rb3);
+        pane20.getChildren().addAll(iWant, rb1, rb2, rb3, rb4);
         pane21.getChildren().addAll(exit);
         root.add(hbox00, 0,0);
         root.add(pane01, 1, 0);
@@ -144,7 +187,15 @@ public class Main extends Application{
         stage.setScene(scene);
         stage.show();
     }
-    private static void rewriting(FlowPane pane11) {
+    public static void imagination(ImageView a, ImageView b, ImageView c, ImageView d) {
+        image.getChildren().removeAll(b, c, d);
+        root.getChildren().remove(image);
+        pane20.getChildren().remove(close);
+        image.getChildren().add(a);
+        root.add(image, 0, 1);
+        pane20.getChildren().add(close);
+    }
+    public static void rewriting(FlowPane pane11) {
         response = new Label("No selection");
         TreeItem<String> tiRoot = new TreeItem<>("Persons");
         for (int i=0; i<vector.size(); i++) {
