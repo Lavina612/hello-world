@@ -7,11 +7,14 @@ import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
 import javafx.beans.value.*;
 import javafx.event.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.image.*;
+import javafx.scene.paint.*;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 
 /**
@@ -19,40 +22,49 @@ import javafx.stage.Stage;
  */
 
 public class Main extends Application{
-    private static Vector<Person> vector = new Vector();
-    private static Person min = null;
+    private static Vector<Person> vector = new Vector<>();
+    private static String min = null;
     private static int bug = 0;
-    private static Label response;
-    private static Label checkBox;
+    private static Label response = new Label();
+    private static Label answer;
     private static Label question;
+    private static Label iWant;
     private static CheckBox chb1;
     private static CheckBox chb2;
     private static CheckBox chb3;
-    private static Label iWant;
     private static Button close;
     private static Button load;
     private static Button remove_last;
     private static Button remove;
     private static Button add_if_min;
+    private static Button save;
+    private static Button update;
     private static FlowPane image;
     private static GridPane root;
+    private static FlowPane pane11;
     private static FlowPane pane20;
+    private static TreeView<String> tvPerson = new TreeView<>();
+
     public void start(Stage stage) {
         stage.setTitle("Laba06");
         root = new GridPane();
+        root.setStyle("-fx-background-color: aliceblue");
         HBox hbox00 = new HBox(15);
         FlowPane pane01 = new FlowPane(10,10);
-        FlowPane pane10 = new FlowPane(10,10);
-        FlowPane pane11 = new FlowPane(10,10);
+        AnchorPane pane10 = new AnchorPane();
+        pane11 = new FlowPane(10,10);
+        pane11.getChildren().add(tvPerson);
         pane20 = new FlowPane(20,15);
         FlowPane pane21 = new FlowPane(10,10);
         image = new FlowPane();
+
         hbox00.setAlignment(Pos.CENTER);
         pane01.setAlignment(Pos.CENTER);
-        pane21.setAlignment(Pos.CENTER);
         pane11.setAlignment(Pos.TOP_CENTER);
         pane20.setAlignment(Pos.CENTER);
+        pane21.setAlignment(Pos.CENTER);
         image.setAlignment(Pos.CENTER);
+
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPrefWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -66,18 +78,141 @@ public class Main extends Application{
         root.getColumnConstraints().addAll(col1, col2);
         root.getRowConstraints().addAll(row1, row2, row3);
         root.setGridLinesVisible(true);
-        ProgressBar bar = new ProgressBar();
-        DatePicker datePick = new DatePicker();
-        datePick.setValue(LocalDate.of(2017,6,14));
-        datePick.setShowWeekNumbers(true);
-        ProgressBar prBar = new ProgressBar();
-        Button exit = new Button("Exit");
-        exit.setOnAction(new EventHandler<ActionEvent>() {
+
+        answer = new Label("");
+        question = new Label("Will you give me a variant for laba 8?");
+        chb1 = new CheckBox("Yes");
+        chb2 = new CheckBox("Of course");
+        chb3 = new CheckBox ("Absolutely");
+        chb1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                exit();
+                if (chb1.isSelected())
+                    answer.setText("Thank you!");
+                else answer.setText("Don't remove this stick");
             }
         });
+        chb2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (chb2.isSelected())
+                    answer.setText("Thank you very much!");
+                else answer.setText("Don't remove this stick!");
+            }
+        });
+        chb3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (chb3.isSelected())
+                    answer.setText("It's so nice! You're so kind!");
+                else answer.setText("Don't remove this stick!!!");
+            }
+        });
+
+        ProgressBar bar = new ProgressBar();
+
+        DatePicker datePick = new DatePicker();
+        datePick.setValue(LocalDate.of(2017,6,16));
+        datePick.setShowWeekNumbers(true);
+        datePick.relocate(350, 10);
+        load = new Button ("load");
+//        load.setTextFill(Color.AQUAMARINE);
+//        load.setPrefSize(150,50);
+//        load.setFont(new Font(20));
+//        load.setStyle("-fx-background-color: lawngreen");
+//        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+//        TextField userTextField = new TextField();
+//        Text actiontarget = new Text();
+        remove_last = new Button ("remove last element");
+        remove = new Button ("remove (index)");
+        add_if_min = new Button ("add if min");
+        save = new Button ("save");
+        update = new Button ("update");
+        load.relocate(15, 150);
+        update.relocate(15, 185);
+        save.relocate(15, 220);
+        remove_last.relocate(15, 255);
+        remove.relocate(15, 290);
+        add_if_min.relocate(15, 325);
+        load.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                load();
+                getMin();
+                rewriting();
+            }
+        });
+        remove_last.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                remove_last();
+                getMin();
+                rewriting();
+            }
+        });
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                save();
+            }
+        });
+        remove.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Button enter = new Button("Enter");
+                enter.relocate(440,230);
+                TextField indexField = new TextField();
+                indexField.relocate(250,230);
+                indexField.setPromptText("Write number of element");
+                pane10.getChildren().addAll(indexField, enter);
+                enter.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        index(indexField);
+                    }
+                });
+                indexField.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                       index(indexField);
+                    }
+                });
+            }
+        });
+        add_if_min.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Button enter = new Button("Enter");
+                enter.relocate(440,230);
+                TextField add = new TextField();
+                add.relocate(440,230);
+                add.setPromptText("Enter name");
+                pane10.getChildren().addAll(add, enter);
+                enter.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        try {if (!add.getText().equals("")) {
+                                if (min.compareTo(add.getText()) >= 0) {
+                                    min = add.getText();
+                                    vector.addElement(new Person(add.getText()));
+                                } else System.out.println("Element is more than min");
+                            } else {
+                                System.out.println("Sorry, but person must have a name");
+                            }
+                        } catch (NullPointerException e) {
+                            System.out.println("Sorry, null cannot be here");
+                        }
+                    }
+                });
+                add.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                    }
+                });
+            }
+        });
+
         Image im1 = new Image("/images/123.jpg");
         ImageView imv1 = new ImageView(im1);
         imv1.setPreserveRatio(true);
@@ -103,35 +238,6 @@ public class Main extends Application{
             @Override
             public void handle(ActionEvent event) {
                 root.getChildren().remove(image);
-            }
-        });
-        checkBox = new Label("");
-        question = new Label("Will you give me a variant for laba 8?");
-        chb1 = new CheckBox("Yes");
-        chb2 = new CheckBox("Of course");
-        chb3 = new CheckBox ("Absolutely");
-        chb1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (chb1.isSelected())
-                    checkBox.setText("Thank you!");
-                else checkBox.setText("Don't remove this stick");
-            }
-        });
-        chb2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (chb2.isSelected())
-                    checkBox.setText("Thank you very much!");
-                else checkBox.setText("Don't remove this stick!");
-            }
-        });
-        chb3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (chb3.isSelected())
-                    checkBox.setText("It's so nice! You're so kind!");
-                else checkBox.setText("Don't remove this stick!!!");
             }
         });
         iWant = new Label ("I want to see...");
@@ -166,15 +272,20 @@ public class Main extends Application{
                 imagination(imv4, imv1, imv2, imv3);
             }
         });
-        load = new Button ("load");
-        remove_last = new Button ("remove last element");
-        remove = new Button ("remove (index)");
-        add_if_min = new Button ("add if min");
+
+        Button exit = new Button("Exit");
+        exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                exit();
+            }
+        });
+
         load();
-        rewriting(pane11);
-        hbox00.getChildren().addAll(question,chb1,chb2,chb3,checkBox);
+        rewriting();
+        hbox00.getChildren().addAll(question,chb1,chb2,chb3,answer);
         pane01.getChildren().addAll(bar);
-        pane10.getChildren().addAll(datePick);
+        pane10.getChildren().addAll(datePick, load, update, save, remove_last, remove, add_if_min);
         pane20.getChildren().addAll(iWant, rb1, rb2, rb3, rb4);
         pane21.getChildren().addAll(exit);
         root.add(hbox00, 0,0);
@@ -187,6 +298,18 @@ public class Main extends Application{
         stage.setScene(scene);
         stage.show();
     }
+    public static void index(TextField indexField){
+        try {
+            System.out.println(indexField.getText());
+            Integer integer = new Integer(indexField.getText());
+            remove(integer);
+            indexField.setText("");
+            getMin();
+            rewriting();
+        } catch (NumberFormatException e) {
+            System.out.println("Sorry, but you wrote a nonsense. Try again!");
+        }
+    }
     public static void imagination(ImageView a, ImageView b, ImageView c, ImageView d) {
         image.getChildren().removeAll(b, c, d);
         root.getChildren().remove(image);
@@ -195,7 +318,8 @@ public class Main extends Application{
         root.add(image, 0, 1);
         pane20.getChildren().add(close);
     }
-    public static void rewriting(FlowPane pane11) {
+    public static void rewriting() {
+        pane11.getChildren().removeAll(tvPerson, response);
         response = new Label("No selection");
         TreeItem<String> tiRoot = new TreeItem<>("Persons");
         for (int i=0; i<vector.size(); i++) {
@@ -217,7 +341,7 @@ public class Main extends Application{
                 }
             }
         }
-        TreeView<String> tvPerson = new TreeView<>(tiRoot);
+        tvPerson = new TreeView<>(tiRoot);
  /*       MultipleSelectionModel<TreeItem<String>> tvSelModel = tvPerson.getSelectionModel();
         tvSelModel.selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
             public void changed(ObservableValue<? extends TreeItem<String>> changed, TreeItem<String> oldVal, TreeItem<String> newVal) {
@@ -360,6 +484,32 @@ public class Main extends Application{
         } else bug = 2;
     }
 
+    public static void save(){
+        String str = "";
+        FileWriter out = null;
+        try {
+            out = new FileWriter("../../Proba.csv", false);
+            for (Person person:vector) {
+                for (int n = 0; n < person.getPhrases().size(); n++) {
+                    str = str.concat(";" + person.getPhrase(n));
+                }
+                str = person.getName().concat(str + '\r' + '\n');
+                out.write(str);
+                str = "";
+            }
+        } catch (IOException e) {
+            System.out.println("Error with access to the file");
+        } finally {
+            try {
+                out.close();
+            } catch (IOException ioe) {
+                System.out.println("Error with close out");
+            } catch (NullPointerException e) {
+                System.out.println("Error with path to the file (output)");
+            }
+        }
+    }
+
     /**
      * This command adds the element into Collection if this element less than min element of this Collection.
      */
@@ -397,29 +547,7 @@ public class Main extends Application{
         getMin();
         Runtime.getRuntime().addShutdownHook(new Thread() {
                                                  public void run() {
-                                                     String str = "";
-                                                     FileWriter out = null;
-                                                     try {
-                                                         out = new FileWriter("../../Proba.csv", false);
-                                                         for (Person person:vector) {
-                                                             for (int n = 0; n < person.getPhrases().size(); n++) {
-                                                                 str = str.concat(";" + person.getPhrase(n));
-                                                             }
-                                                             str = person.getName().concat(str + '\r' + '\n');
-                                                             out.write(str);
-                                                             str = "";
-                                                         }
-                                                     } catch (IOException e) {
-                                                         System.out.println("Error with access to the file");
-                                                     } finally {
-                                                         try {
-                                                             out.close();
-                                                         } catch (IOException ioe) {
-                                                             System.out.println("Error with close out");
-                                                         } catch (NullPointerException e) {
-                                                             System.out.println("Error with path to the file (output)");
-                                                             }
-                                                     }
+                                                     save();
                                                  }
                                              }
         );
