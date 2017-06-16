@@ -1,3 +1,4 @@
+import java.awt.event.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Vector;
@@ -7,8 +8,8 @@ import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
 import javafx.beans.value.*;
 import javafx.event.*;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.event.ActionEvent;
+import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -23,7 +24,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
     private static Vector<Person> vector = new Vector<>();
-    private static String min = null;
+    private static Person min = null;
     private static int bug = 0;
     private static Label response = new Label();
     private static Label answer;
@@ -39,11 +40,14 @@ public class Main extends Application{
     private static Button add_if_min;
     private static Button save;
     private static Button update;
+    private static Button enter;
+    private static Button closeAdd;
     private static FlowPane image;
     private static GridPane root;
     private static FlowPane pane11;
     private static FlowPane pane20;
     private static TreeView<String> tvPerson = new TreeView<>();
+    private static TextField add;
 
     public void start(Stage stage) {
         stage.setTitle("Laba06");
@@ -159,12 +163,14 @@ public class Main extends Application{
         remove.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Button enter = new Button("Enter");
+                enter = new Button("Enter");
                 enter.relocate(440,230);
                 TextField indexField = new TextField();
                 indexField.relocate(250,230);
                 indexField.setPromptText("Write number of element");
-                pane10.getChildren().addAll(indexField, enter);
+                closeAdd = new Button("Close");
+                closeAdd.relocate(440,270);
+                pane10.getChildren().addAll(indexField, enter, closeAdd);
                 enter.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -177,39 +183,142 @@ public class Main extends Application{
                        index(indexField);
                     }
                 });
+                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        pane10.getChildren().removeAll(indexField, enter, closeAdd);
+                    }
+                });
             }
         });
         add_if_min.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Button enter = new Button("Enter");
+                enter = new Button("Enter");
                 enter.relocate(440,230);
+                closeAdd = new Button("Close");
+                closeAdd.relocate(440,270);
                 TextField add = new TextField();
-                add.relocate(440,230);
-                add.setPromptText("Enter name");
-                pane10.getChildren().addAll(add, enter);
+                add.relocate(220,230);
+                add.setPrefColumnCount(16);
+                add.setPromptText("Enter name or JSON-person");
+                pane10.getChildren().addAll(add, enter, closeAdd);
                 enter.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        try {if (!add.getText().equals("")) {
-                                if (min.compareTo(add.getText()) >= 0) {
-                                    min = add.getText();
-                                    vector.addElement(new Person(add.getText()));
-                                } else System.out.println("Element is more than min");
-                            } else {
-                                System.out.println("Sorry, but person must have a name");
-                            }
-                        } catch (NullPointerException e) {
-                            System.out.println("Sorry, null cannot be here");
-                        }
+                        add_if_min(add);
                     }
                 });
                 add.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
+                        add_if_min(add);
+                    }
+                });
+                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        pane10.getChildren().removeAll(add, enter, closeAdd);
+                    }
+                });
+
+            }
+        });
+        update.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TextField change = new TextField();
+                change.relocate(250,230);
+                change.setPromptText("Enter number of person");
+                enter = new Button("Enter");
+                enter.relocate(440,230);
+                closeAdd = new Button("Close");
+                closeAdd.relocate(440,270);
+                pane10.getChildren().addAll(change, enter, closeAdd);
+                enter.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
 
                     }
                 });
+                change.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        try {
+                            Integer integer = new Integer(change.getText());
+                            integer--;
+                            if(integer<vector.size()) {
+                                if (integer >= 0) {
+                                    Person person = vector.get(integer);
+                                    change.setText("");
+                                    pane10.getChildren().remove(change);
+                                    RadioButton name = new RadioButton("Name");
+                                    RadioButton phrase = new RadioButton("Phrase");
+                                    ToggleGroup np = new ToggleGroup();
+                                    name.setToggleGroup(np);
+                                    phrase.setToggleGroup(np);
+                                    name.relocate(220, 215);
+                                    phrase.relocate(220, 250);
+                                    pane10.getChildren().addAll(name, phrase);
+                                    name.setOnAction(new EventHandler<ActionEvent>() {
+                                        @Override
+                                        public void handle(ActionEvent event) {
+                                            pane10.getChildren().removeAll(name, phrase);
+                                            change.relocate(220,230);
+                                            change.setPromptText("Enter name");
+                                            change.setOnAction(new EventHandler<ActionEvent>() {
+                                                @Override
+                                                public void handle(ActionEvent event) {
+                                                    person.setName(change.getText());
+                                                    rewriting();
+                                                }
+                                            });
+                                            pane10.getChildren().add(change);
+
+                                        }
+                                    });
+                                    phrase.setOnAction(new EventHandler<ActionEvent>() {
+                                        @Override
+                                        public void handle(ActionEvent event) {
+                                            pane10.getChildren().removeAll(name, phrase);
+                                            change.setPromptText("Enter number of phrase");
+                                            pane10.getChildren().add(change);
+                                            try {
+                                                Integer int2 = new Integer(change.getText());
+                                                change.setPromptText("Enter phrase");
+                                                pane10.getChildren().add(change);
+                                                if (int2 <= person.getPhrases().size())
+                                                    person.setPhrase(int2, new Phrase(change.getText()));
+                                                else {
+                                                    System.out.println("The index more than amount of phrases");
+                                                    change.setText("");
+                                                }
+                                                pane10.getChildren().remove(change);
+                                            } catch (NumberFormatException e) {
+                                                System.out.println("Sorry, but you wrote a nonsense");
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    System.out.println("The number less than elements in collection");
+                                    change.setText("");
+                                }
+                            } else {
+                                System.out.println("The number more than elements in collection");
+                                change.setText("");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Sorry, but you wrote a nonsense");
+                        }
+                    }
+                });
+                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        pane10.getChildren().removeAll(change, enter, closeAdd);
+                    }
+                });
+
             }
         });
 
@@ -233,11 +342,11 @@ public class Main extends Application{
         imv4.setPreserveRatio(true);
         imv4.setFitHeight(400);
         imv4.setFitWidth(400);
-        close = new Button("close");
+        close = new Button("Close");
         close.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                root.getChildren().remove(image);
+                root.getChildren().removeAll(image);
             }
         });
         iWant = new Label ("I want to see...");
@@ -282,6 +391,7 @@ public class Main extends Application{
         });
 
         load();
+        getMin();
         rewriting();
         hbox00.getChildren().addAll(question,chb1,chb2,chb3,answer);
         pane01.getChildren().addAll(bar);
@@ -360,7 +470,7 @@ public class Main extends Application{
     }
     private static void exit() {
         System.out.println("Bye!");
-        System.exit(1);
+        System.exit(0);
     }
     private static void outVector() {
         for (int i = 0; i < vector.size(); i++) {
@@ -368,25 +478,17 @@ public class Main extends Application{
         }
     }
     private static void getMin() {
-        if (bug == 1) {
-            if (vector.size() != 0) {
-                min = vector.get(0);
-                for (int k = 1; k < vector.size(); k++) {
-                    if (min.compareTo(vector.get(k)) > 0) min = vector.get(k);
-                }
-                System.out.println("min = " + min.getName());
-                outVector();
-            } else {
-                min = null;
-                System.out.println("min = null");
+        if (!vector.isEmpty()) {
+            min = vector.get(0);
+            for (int k = 1; k < vector.size(); k++) {
+                if (min.compareTo(vector.get(k)) > 0) min = vector.get(k);
             }
-        }
-        if (bug == 2) {
+            System.out.println("min = " + min);
+        } else {
             System.out.println("No elements in Collection");
             min = null;
             System.out.println("min = null");
         }
-            bug = 0;
     }
 
     /**
@@ -406,7 +508,7 @@ public class Main extends Application{
     private static void remove(int index) {
         if (vector.size() == 0) bug = 2;
         else {
-            if (index >= vector.size()) {
+            if (index > vector.size()) {
                 bug = 0;
                 System.out.println("Index more than elements in Collection");
             }
@@ -415,7 +517,7 @@ public class Main extends Application{
                     bug = 0;
                     System.out.println("Index less than elements in Collection");
                 } else {
-                    vector.remove(index);
+                    vector.remove(index-1);
                     bug = 1;
                     System.out.println("Everything is good! :) (remove)");
                 }
@@ -513,29 +615,66 @@ public class Main extends Application{
     /**
      * This command adds the element into Collection if this element less than min element of this Collection.
      */
-    private static void add_if_min(String element) {
-        try {
-            Gson gson = new Gson();
-            Person person = gson.fromJson(element, Person.class);
+    private static void add_if_min(TextField element) {
+        try {Gson gson = new Gson();
+            Person person = gson.fromJson(element.getText(), Person.class);
             if (!person.getName().equals("")) {
                 System.out.println(person.toString());
-                if (min.compareTo(person) >= 0) {
+                if (min.compareTo(person) > 0) {
                     min = person;
                     vector.addElement(person);
-                    bug = 1;
+                    rewriting();
+                    element.setText("");
                     System.out.println("Everything is good! :) (add_if_min)");
                     System.out.println("min = " + min.getName());
-                    outVector();
-                } else System.out.println("Element is more than min");
+                } else {
+                    System.out.println("Element is more than min");
+                    element.setText("");
+                }
             } else {
                 System.out.println("Sorry, but person must have a name");
             }
         } catch (JsonSyntaxException e) {
             System.out.println("Sorry, it's not JSON");
+            if(!"".equals(element)) {
+                Person person = new Person(element.getText());
+                if (min.compareTo(person) > 0) {
+                    min = person;
+                    vector.addElement(person);
+                    rewriting();
+                    element.setText("");
+                    System.out.println("Everything is good! :) (add_if_min)");
+                    System.out.println("min = " + min.getName());
+                    int i=1;
+  /*                  while (closeAdd.fire() == ) {
+                        element.setPromptText("Phrase " + i);
+                        enter.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                remove_last();
+                                person.addPhrase(new Phrase(element.getText()));
+                                element.setText("");
+                                rewriting();
+                            }
+                        });
+                        add.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                add_if_min(add);
+                            }
+                        });
+                        i++;
+
+                    } */
+                } else {
+                    System.out.println("Element is more than min");
+                    element.setText("");
+                }
+            }
         } catch (NullPointerException e) {
             System.out.println("Sorry, null cannot be here");
+            element.setText("");
         }
-        bug = 0;
     }
 
     public static void main(String[] args) {
@@ -587,10 +726,9 @@ public class Main extends Application{
                                 } catch (NumberFormatException e) {
                                     System.out.println("Sorry, but you wrote a nonsense. Try again!");
                                 }
-                            } else {
-                                if (s1.equals("add_if_min")) add_if_min(s2);
-                                 else System.out.println(":( This command wasn't found. Try again!");
                             }
+                                 else System.out.println(":( This command wasn't found. Try again!");
+
                         } else System.out.println(":( This command not found. Try again!");
                     }
                 }

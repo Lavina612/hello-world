@@ -13,6 +13,9 @@ public class Person implements Comparable <Person> {
     public ArrayList<Phrase> getPhrases() {
         return phrases;
     }
+    public void setPhrase(int i, Phrase ph) {
+        phrases.get(i).setPhrase(ph.getPhrase());
+    }
     public void addPhrase(Phrase phrs){
         phrases.add(phrs);}
    public String getPhrase (int i){
