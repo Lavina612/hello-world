@@ -4,7 +4,6 @@ import java.util.Vector;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
-import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.event.ActionEvent;
 import javafx.geometry.*;
@@ -24,8 +23,6 @@ public class Main extends Application {
     private static Vector<Person> vector = new Vector<>();
     private static Person min = null;
     private static Label answer;
-    private static Label question;
-    private static Label iWant;
     private static Label message;
     private static Label message2;
     private static CheckBox chb1;
@@ -92,7 +89,7 @@ public class Main extends Application {
         root.setGridLinesVisible(true);
 
         answer = new Label("");
-        question = new Label("Will you give me a variant for laba 8?");
+        Label question = new Label("Will you give me a variant for laba 8?");
         chb1 = new CheckBox("Yes");
         chb2 = new CheckBox("Of course");
         chb3 = new CheckBox("Absolutely");
@@ -219,147 +216,14 @@ public class Main extends Application {
                 change.relocate(250, 230);
                 change.setPromptText("Enter number of person");
                 pane10.getChildren().addAll(change, enter, closeInteractive);
-                enter.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                    }
-                });
-                change.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        try {
-                            Integer integer = new Integer(change.getText());
-                            integer--;
-                            if (integer < vector.size()) {
-                                if (integer >= 0) {
-                                    int a = integer;
-                                    change.setText("");
-                                    pane10.getChildren().remove(change);
-                                    nameRB = new RadioButton("Name");
-                                    phraseRB = new RadioButton("Phrase");
-                                    ToggleGroup np = new ToggleGroup();
-                                    nameRB.setToggleGroup(np);
-                                    phraseRB.setToggleGroup(np);
-                                    nameRB.relocate(250, 235);
-                                    phraseRB.relocate(250, 270);
-                                    pane10.getChildren().addAll(nameRB, phraseRB);
-                                    nameRB.setOnAction(new EventHandler<ActionEvent>() {
-                                        @Override
-                                        public void handle(ActionEvent event) {
-                                            pane10.getChildren().removeAll(nameRB, phraseRB);
-                                            //change.relocate(220,230);
-                                            change.setPromptText("Enter name");
-                                            pane10.getChildren().add(change);
-                                            enter.setOnAction(event1 -> {
-                                                vector.get(a).setName(change.getText());
-                                                getMin();
-                                                rewriting();
-                                                    }
-                                            );
-                                            change.setOnAction(event1 -> {
-                                                        vector.get(a).setName(change.getText());
-                                                        getMin();
-                                                        rewriting();
-                                                        pane10.getChildren().removeAll(change, enter, closeInteractive);
-                                                    }
-                                            );
-                                        }
-                                    });
-                                    phraseRB.setOnAction(new EventHandler<ActionEvent>() {
-                                        @Override
-                                        public void handle(ActionEvent event) {
-                                            pane10.getChildren().removeAll(nameRB, phraseRB);
-                                            change.setPromptText("Enter number of phrase");
-                                            pane10.getChildren().add(change);
-                                            enter.setOnAction(event1 -> {
-                                                try {
-                                                    Integer int2 = new Integer(change.getText());
-                                                    System.out.println(int2);
-                                                    int b = --int2;
-                                                    System.out.println(b);
-                                                    change.setText("");
-                                                    if (int2 < 0)
-                                                        message.setText("The number can't be negative");
-                                                    else if (int2 >= vector.get(a).getPhrases().size())
-                                                        message.setText("The number more than elements in Collection");
-                                                    else {
-                                                        pane10.getChildren().remove(change);
-                                                        change.setPromptText("Enter a phrase");
-                                                        pane10.getChildren().add(change);
-                                                        change.setOnAction(event2 -> {
-                                                            vector.get(a).setPhrase(b, new Phrase(change.getText()));
-                                                            change.setText("");
-                                                            getMin();
-                                                            rewriting();
-                                                        });
-                                                        enter.setOnAction(event2 -> {
-                                                            vector.get(a).setPhrase(b, new Phrase(change.getText()));
-                                                            change.setText("");
-                                                            getMin();
-                                                            rewriting();
-                                                        });
-                                                    }
-                                                } catch (NumberFormatException e) {
-                                                    message.setText("Sorry, but you wrote a nonsense");
-                                                    change.setText("");
-                                                }
-                                            });
-                                            change.setOnAction(event1 -> {
-                                                try {
-                                                    Integer int2 = new Integer(change.getText());
-                                                    System.out.println(int2);
-                                                    int b = --int2;
-                                                    System.out.println(b);
-                                                    change.setText("");
-                                                    if (int2 < 0)
-                                                        message.setText("The number can't be negative");
-                                                    else if (int2 >= vector.get(a).getPhrases().size())
-                                                        message.setText("The number more than elements in Collection");
-                                                    else {
-                                                        pane10.getChildren().remove(change);
-                                                        change.setPromptText("Enter a phrase");
-                                                        pane10.getChildren().add(change);
-                                                        change.setOnAction(event2 -> {
-                                                            vector.get(a).setPhrase(b, new Phrase(change.getText()));
-                                                            change.setText("");
-                                                            getMin();
-                                                            rewriting();
-                                                        });
-                                                        enter.setOnAction(event2 -> {
-                                                            vector.get(a).setPhrase(b, new Phrase(change.getText()));
-                                                            change.setText("");
-                                                            getMin();
-                                                            rewriting();
-                                                        });
-                                                    }
-                                                } catch (NumberFormatException e) {
-                                                    message.setText("Sorry, but you wrote a nonsense");
-                                                    change.setText("");
-                                                }
-                                            });
-                                        }
-                                    });
-                                } else {
-                                    message.setText("Number can't be negative");
-                                    change.setText("");
-                                }
-                            } else {
-                                message.setText("The number more than elements in Collection");
-                                change.setText("");
-                            }
-                        } catch (NumberFormatException e) {
-                            message.setText("Sorry, but you wrote a nonsense");
-                            change.setText("");
-                        }
-                    }
-                });
+                enter.setOnAction(event1 -> method2());
+                change.setOnAction(event1 -> method2());
                 closeInteractive.setOnAction(event1 -> {
                     pane10.getChildren().removeAll(change, enter, closeInteractive);
                     if (pane10.getChildren().contains(nameRB)) pane10.getChildren().remove(nameRB);
                     if (pane10.getChildren().contains(phraseRB)) pane10.getChildren().remove(phraseRB);
                 });
-
+                message.setText("Collection updated");
             }
         });
 
@@ -388,7 +252,7 @@ public class Main extends Application {
             pane20.getChildren().remove(close);
             root.getChildren().remove(image);
         });
-        iWant = new Label("I want to see...");
+        Label iWant = new Label("I want to see...");
         RadioButton rb1 = new RadioButton("VT");
         RadioButton rb2 = new RadioButton("duck");
         RadioButton rb3 = new RadioButton("our dreams");
@@ -421,6 +285,7 @@ public class Main extends Application {
                 }
             }
             rewriting();
+            message.setText("Collection sorted on names");
         });
         filterPhr.setOnAction(event -> {
             for (Person person : vector) {
@@ -435,6 +300,7 @@ public class Main extends Application {
                 }
             }
             rewriting();
+            message.setText("Collection sorted on phrases");
         });
         filterName.relocate(60, 415);
         filterPhr.relocate(60, 455);
@@ -474,6 +340,105 @@ public class Main extends Application {
             System.exit(1);
                 }
         );
+    }
+
+
+    private static void method0(int a, int b) {
+        vector.get(a).setPhrase(b, new Phrase(change.getText()));
+        change.setText("");
+        getMin();
+        rewriting();
+    }
+
+    private static void method1(int a) {
+        try {
+            Integer int2 = new Integer(change.getText());
+            System.out.println(int2);
+            int b = --int2;
+            System.out.println(b);
+            change.setText("");
+            if (int2 < 0)
+                message.setText("The number can't be negative");
+            else if (int2 >= vector.get(a).getPhrases().size())
+                message.setText("The number more than elements in Collection");
+            else {
+                pane10.getChildren().remove(change);
+                change.setPromptText("Enter a phrase");
+                pane10.getChildren().add(change);
+                change.setOnAction(event2 -> method0(a,b));
+                enter.setOnAction(event2 -> method0(a,b));
+            }
+        } catch (NumberFormatException e) {
+            message.setText("Sorry, but you wrote a nonsense");
+            change.setText("");
+        }
+    }
+
+    private static void method2() {
+        try {
+            Integer integer = new Integer(change.getText());
+            integer--;
+            if (integer < vector.size()) {
+                if (integer >= 0) {
+                    int a = integer;
+                    change.setText("");
+                    pane10.getChildren().remove(change);
+                    nameRB = new RadioButton("Name");
+                    phraseRB = new RadioButton("Phrase");
+                    ToggleGroup np = new ToggleGroup();
+                    nameRB.setToggleGroup(np);
+                    phraseRB.setToggleGroup(np);
+                    nameRB.relocate(250, 235);
+                    phraseRB.relocate(250, 270);
+                    pane10.getChildren().addAll(nameRB, phraseRB);
+                    nameRB.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            pane10.getChildren().removeAll(nameRB, phraseRB);
+                            //change.relocate(220,230);
+                            change.setPromptText("Enter name");
+                            pane10.getChildren().add(change);
+                            enter.setOnAction(event1 -> {
+                                        vector.get(a).setName(change.getText());
+                                        getMin();
+                                        rewriting();
+                                    }
+                            );
+                            change.setOnAction(event1 -> {
+                                        vector.get(a).setName(change.getText());
+                                        getMin();
+                                        rewriting();
+                                        pane10.getChildren().removeAll(change, enter, closeInteractive);
+                                    }
+                            );
+                        }
+                    });
+                    phraseRB.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            pane10.getChildren().removeAll(nameRB, phraseRB);
+                            change.setPromptText("Enter number of phrase");
+                            pane10.getChildren().add(change);
+                            enter.setOnAction(event1 -> {
+                                method1(a);
+                            });
+                            change.setOnAction(event1 -> {
+                                method1(a);
+                            });
+                        }
+                    });
+                } else {
+                    message.setText("Number can't be negative");
+                    change.setText("");
+                }
+            } else {
+                message.setText("The number more than elements in Collection");
+                change.setText("");
+            }
+        } catch (NumberFormatException e) {
+            message.setText("Sorry, but you wrote a nonsense");
+            change.setText("");
+        }
     }
 
     /**
@@ -576,7 +541,7 @@ public class Main extends Application {
     private static void remove_last() {
         if (!vector.isEmpty()) {
             vector.remove(vector.lastElement());
-            message.setText("Everything is good! :) (remove_last)");
+            message.setText("Remove_last is done :)");
         } else message.setText("Vector is empty");
     }
 
@@ -596,7 +561,7 @@ public class Main extends Application {
                     vector.remove(index - 1);
                     getMin();
                     rewriting();
-                    message.setText("Everything is good! :) (remove)");
+                    message.setText("Remove is done :)");
                 }
             }
         }
@@ -644,7 +609,7 @@ public class Main extends Application {
             }
         }
         if (!vector.isEmpty())
-            message.setText("Everything is good! :) (load)");
+            message.setText("Loading is done :)");
     }
 
     private static void m(String[] strs, Person person) {
@@ -679,6 +644,7 @@ public class Main extends Application {
                 out.write(str);
                 str = "";
             }
+            message.setText("Save is done :)");
         } catch (IOException e) {
             System.out.println("Error with access to the file");
         } finally {
@@ -706,7 +672,7 @@ public class Main extends Application {
                     vector.addElement(person);
                     rewriting();
                     element.setText("");
-                    message.setText("Everything is good! :) (add_if_min)");
+                    message.setText("Add_if_min is done :)");
                     message2.setText("min = " + min.getName());
                 } else {
                     message.setText("Element is more than min");
@@ -723,7 +689,7 @@ public class Main extends Application {
                     vector.addElement(person);
                     rewriting();
                     pane10.getChildren().remove(element);
-                    message.setText("Everything is good! :) (add_if_min)");
+                    message.setText("Add_if_min is done :)");
                     message2.setText("min = " + min.getName());
                     phrase = new TextField();
                     phrase.relocate(220, 230);
@@ -754,3 +720,9 @@ public class Main extends Application {
 }
 
 //C:\Users\Elizabeth\Desktop\ИТМО\Программирование\Лабораторные\Лаба05\Proba.csv
+
+/* Посмотреть imagine
+add_if_min
+целиком код
+комментарии
+ */
