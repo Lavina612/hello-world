@@ -1,8 +1,6 @@
-import java.awt.event.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Vector;
-import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import javafx.application.Application;
@@ -17,7 +15,6 @@ import javafx.scene.image.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
 import javafx.stage.*;
-import javafx.stage.WindowEvent;
 
 /**
  * @author Elizabeth, P3111 :)
@@ -26,8 +23,6 @@ import javafx.stage.WindowEvent;
 public class Main extends Application{
     private static Vector<Person> vector = new Vector<>();
     private static Person min = null;
-    private static int bug = 0;
-    private static Label response = new Label();
     private static Label answer;
     private static Label question;
     private static Label iWant;
@@ -35,14 +30,10 @@ public class Main extends Application{
     private static CheckBox chb2;
     private static CheckBox chb3;
     private static Button close;
-    private static Button load;
-    private static Button remove_last;
-    private static Button remove;
-    private static Button add_if_min;
-    private static Button save;
-    private static Button update;
     private static Button enter;
     private static Button closeInteractive;
+    private static RadioButton nameRB;
+    private static RadioButton phraseRB;
     private static FlowPane image;
     private static GridPane root;
     private static AnchorPane pane10;
@@ -94,30 +85,24 @@ public class Main extends Application{
         chb1 = new CheckBox("Yes");
         chb2 = new CheckBox("Of course");
         chb3 = new CheckBox ("Absolutely");
-        chb1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        chb1.setOnAction(event -> {
                 if (chb1.isSelected())
                     answer.setText("Thank you!");
                 else answer.setText("Don't remove this stick");
             }
-        });
-        chb2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        );
+        chb2.setOnAction(event -> {
                 if (chb2.isSelected())
                     answer.setText("Thank you very much!");
                 else answer.setText("Don't remove this stick!");
             }
-        });
-        chb3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        );
+        chb3.setOnAction(event -> {
                 if (chb3.isSelected())
                     answer.setText("It's so nice! You're so kind!");
                 else answer.setText("Don't remove this stick!!!");
             }
-        });
+        );
 
         ProgressBar bar = new ProgressBar();
 
@@ -125,7 +110,7 @@ public class Main extends Application{
         datePick.setValue(LocalDate.of(2017,6,16));
         datePick.setShowWeekNumbers(true);
         datePick.relocate(350, 10);
-        load = new Button ("load");
+        Button load = new Button ("load");
 //        load.setTextFill(Color.AQUAMARINE);
 //        load.setPrefSize(150,50);
 //        load.setFont(new Font(20));
@@ -133,11 +118,11 @@ public class Main extends Application{
 //        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 //        TextField userTextField = new TextField();
 //        Text actiontarget = new Text();
-        remove_last = new Button ("remove last element");
-        remove = new Button ("remove (index)");
-        add_if_min = new Button ("add if min");
-        save = new Button ("save");
-        update = new Button ("update");
+        Button remove_last = new Button ("remove last element");
+        Button remove = new Button ("remove (index)");
+        Button add_if_min = new Button ("add if min");
+        Button save = new Button ("save");
+        Button update = new Button ("update");
         load.relocate(15, 150);
         update.relocate(15, 185);
         save.relocate(15, 220);
@@ -190,6 +175,8 @@ public class Main extends Application{
             @Override
             public void handle(ActionEvent event) {
                 checking();
+                if (pane10.getChildren().contains(nameRB)) pane10.getChildren().remove(nameRB);
+                if (pane10.getChildren().contains(phraseRB)) pane10.getChildren().remove(phraseRB);
                 change = new TextField();
                 change.relocate(250,230);
                 change.setPromptText("Enter number of person");
@@ -208,54 +195,113 @@ public class Main extends Application{
                             integer--;
                             if(integer<vector.size()) {
                                 if (integer >= 0) {
-                                    Person person = vector.get(integer);
+                                    int a = integer;
                                     change.setText("");
                                     pane10.getChildren().remove(change);
-                                    RadioButton name = new RadioButton("Name");
-                                    RadioButton phrase = new RadioButton("Phrase");
+                                    nameRB = new RadioButton("Name");
+                                    phraseRB = new RadioButton("Phrase");
                                     ToggleGroup np = new ToggleGroup();
-                                    name.setToggleGroup(np);
-                                    phrase.setToggleGroup(np);
-                                    name.relocate(220, 215);
-                                    phrase.relocate(220, 250);
-                                    pane10.getChildren().addAll(name, phrase);
-                                    name.setOnAction(new EventHandler<ActionEvent>() {
+                                    nameRB.setToggleGroup(np);
+                                    phraseRB.setToggleGroup(np);
+                                    nameRB.relocate(250, 235);
+                                    phraseRB.relocate(250, 270);
+                                    pane10.getChildren().addAll(nameRB, phraseRB);
+                                    nameRB.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
                                         public void handle(ActionEvent event) {
-                                            pane10.getChildren().removeAll(name, phrase);
-                                            change.relocate(220,230);
+                                            pane10.getChildren().removeAll(nameRB, phraseRB);
+                                            //change.relocate(220,230);
                                             change.setPromptText("Enter name");
-                                            change.setOnAction(new EventHandler<ActionEvent>() {
-                                                @Override
-                                                public void handle(ActionEvent event) {
-                                                    person.setName(change.getText());
-                                                    rewriting();
-                                                }
-                                            });
                                             pane10.getChildren().add(change);
-
+                                            enter.setOnAction(event1 -> {
+                                                    vector.get(a).setName(change.getText());
+                                                    getMin();
+                                                    rewriting();
+                                                    }
+                                            );
+                                            change.setOnAction(event1 -> {
+                                                    vector.get(a).setName(change.getText());
+                                                    getMin();
+                                                    rewriting();
+                                                    pane10.getChildren().removeAll(change, enter, closeInteractive);
+                                                }
+                                            );
                                         }
                                     });
-                                    phrase.setOnAction(new EventHandler<ActionEvent>() {
+                                    phraseRB.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
                                         public void handle(ActionEvent event) {
-                                            pane10.getChildren().removeAll(name, phrase);
+                                            pane10.getChildren().removeAll(nameRB, phraseRB);
                                             change.setPromptText("Enter number of phrase");
                                             pane10.getChildren().add(change);
-                                            try {
-                                                Integer int2 = new Integer(change.getText());
-                                                change.setPromptText("Enter phrase");
-                                                pane10.getChildren().add(change);
-                                                if (int2 <= person.getPhrases().size())
-                                                    person.setPhrase(int2, new Phrase(change.getText()));
-                                                else {
-                                                    System.out.println("The index more than amount of phrases");
+                                            enter.setOnAction(event1 -> {
+                                                try {
+                                                    Integer int2 = new Integer(change.getText());
+                                                    System.out.println(int2);
+                                                    int b = --int2;
+                                                    System.out.println(b);
+                                                    change.setText("");
+                                                    if(int2 < 0)
+                                                        System.out.println("Sorry, you're stupid");
+                                                    else
+                                                    if (int2 >= vector.get(a).getPhrases().size())
+                                                        System.out.println("Stupid 2");
+                                                    else {
+                                                        pane10.getChildren().remove(change);
+                                                        change.setPromptText("Enter a phrase");
+                                                        pane10.getChildren().add(change);
+                                                        change.setOnAction(event2 -> {
+                                                            vector.get(a).setPhrase(b, new Phrase (change.getText()));
+                                                            change.setText("");
+                                                            getMin();
+                                                            rewriting();
+                                                        });
+                                                        enter.setOnAction(event2 -> {
+                                                            vector.get(a).setPhrase(b, new Phrase (change.getText()));
+                                                            change.setText("");
+                                                            getMin();
+                                                            rewriting();
+                                                        });
+                                                    }
+                                                } catch (NumberFormatException e) {
+                                                    System.out.println("Sorry, but you wrote a nonsense");
                                                     change.setText("");
                                                 }
-                                                pane10.getChildren().remove(change);
+                                            });
+                                            change.setOnAction(event1 -> {
+                                            try {
+                                                Integer int2 = new Integer(change.getText());
+                                                System.out.println(int2);
+                                                int b = --int2;
+                                                System.out.println(b);
+                                                change.setText("");
+                                                if(int2 < 0)
+                                                    System.out.println("Sorry, you're stupid");
+                                                else
+                                                    if (int2 >= vector.get(a).getPhrases().size())
+                                                        System.out.println("Stupid 2");
+                                                    else {
+                                                        pane10.getChildren().remove(change);
+                                                        change.setPromptText("Enter a phrase");
+                                                        pane10.getChildren().add(change);
+                                                        change.setOnAction(event2 -> {
+                                                            vector.get(a).setPhrase(b, new Phrase (change.getText()));
+                                                            change.setText("");
+                                                            getMin();
+                                                            rewriting();
+                                                        });
+                                                        enter.setOnAction(event2 -> {
+                                                            vector.get(a).setPhrase(b, new Phrase (change.getText()));
+                                                            change.setText("");
+                                                            getMin();
+                                                            rewriting();
+                                                        });
+                                                    }
                                             } catch (NumberFormatException e) {
                                                 System.out.println("Sorry, but you wrote a nonsense");
+                                                change.setText("");
                                             }
+                                        });
                                         }
                                     });
                                 } else {
@@ -268,14 +314,14 @@ public class Main extends Application{
                             }
                         } catch (NumberFormatException e) {
                             System.out.println("Sorry, but you wrote a nonsense");
+                            change.setText("");
                         }
                     }
                 });
-                closeInteractive.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        pane10.getChildren().removeAll(change, enter, closeInteractive);
-                    }
+                closeInteractive.setOnAction(event1 -> {
+                    pane10.getChildren().removeAll(change, enter, closeInteractive);
+                    if (pane10.getChildren().contains(nameRB)) pane10.getChildren().remove(nameRB);
+                    if (pane10.getChildren().contains(phraseRB)) pane10.getChildren().remove(phraseRB);
                 });
 
             }
@@ -302,12 +348,7 @@ public class Main extends Application{
         imv4.setFitHeight(400);
         imv4.setFitWidth(400);
         close = new Button("Close");
-        close.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                root.getChildren().removeAll(image);
-            }
-        });
+        close.setOnAction(event -> root.getChildren().removeAll(image));
         iWant = new Label ("I want to see...");
         RadioButton rb1 = new RadioButton("VT");
         RadioButton rb2 = new RadioButton("duck");
@@ -318,37 +359,13 @@ public class Main extends Application{
         rb2.setToggleGroup(tg);
         rb3.setToggleGroup(tg);
         rb4.setToggleGroup(tg);
-        rb1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                imagination(imv1, imv4, imv2, imv3);}
-        });
-        rb2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                imagination(imv2, imv1, imv4, imv3);}
-        });
-        rb3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                imagination(imv3, imv1, imv2, imv4);
-            }
-        });
-        rb4.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                imagination(imv4, imv1, imv2, imv3);
-            }
-        });
+        rb1.setOnAction(event -> imagination(imv1, imv4, imv2, imv3));
+        rb2.setOnAction(event -> imagination(imv2, imv1, imv4, imv3));
+        rb3.setOnAction(event -> imagination(imv3, imv1, imv2, imv4));
+        rb4.setOnAction(event -> imagination(imv4, imv1, imv2, imv3));
 
         Button exit = new Button("Exit");
-        exit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                exit();
-            }
-        });
-
+        exit.setOnAction(event -> exit());
         load();
         getMin();
         rewriting();
@@ -366,22 +383,28 @@ public class Main extends Application{
         Scene scene = new Scene(root, 850,600);
         stage.setScene(scene);
         stage.show();
-        stage.setOnCloseRequest(new EventHandler<javafx.stage.WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                save();
-                System.exit(1);
-            }
-        });
+        stage.setOnCloseRequest( event -> {
+            save();
+            System.exit(1);
+                }
+        );
     }
-    public static void checking() {
+
+    /**
+     * This command does checking.
+     */
+    private static void checking() {
         if (pane10.getChildren().contains(indexField)) pane10.getChildren().remove(indexField);
         if (pane10.getChildren().contains(enter)) pane10.getChildren().remove(enter);
         if (pane10.getChildren().contains(closeInteractive)) pane10.getChildren().remove(closeInteractive);
         if (pane10.getChildren().contains(add)) pane10.getChildren().remove(add);
         if (pane10.getChildren().contains(change)) pane10.getChildren().remove(change);
     }
-    public static void index(TextField indexField){
+
+    /**
+     * This command removes need element from the Collection.
+     */
+    private static void index(TextField indexField){
         try {
             System.out.println(indexField.getText());
             Integer integer = new Integer(indexField.getText());
@@ -393,7 +416,11 @@ public class Main extends Application{
             indexField.setText("");
         }
     }
-    public static void imagination(ImageView a, ImageView b, ImageView c, ImageView d) {
+
+    /**
+     * This command works with pictures.
+     */
+    private static void imagination(ImageView a, ImageView b, ImageView c, ImageView d) {
         image.getChildren().removeAll(b, c, d);
         root.getChildren().remove(image);
         pane20.getChildren().remove(close);
@@ -401,9 +428,12 @@ public class Main extends Application{
         root.add(image, 0, 1);
         pane20.getChildren().add(close);
     }
-    public static void rewriting() {
-        pane11.getChildren().removeAll(tvPerson, response);
-        response = new Label("No selection");
+
+    /**
+     * This command rewrites the Collection.
+     */
+    private static void rewriting() {
+        pane11.getChildren().remove(tvPerson);
         TreeItem<String> tiRoot = new TreeItem<>("Persons");
         for (int i=0; i<vector.size(); i++) {
             TreeItem<String> tiPerson = new TreeItem<> ("Person " + (i+1));
@@ -418,43 +448,32 @@ public class Main extends Application{
                     TreeItem<String> tiPhrase = new TreeItem<>("Phrase " + (j+1));
                     tiPhrases.getChildren().add(tiPhrase);
                     if(vector.get(i).getPhrases().get(j).getPhrase().isEmpty()) {
-                        tiPhrase.getChildren().add(new TreeItem<String>("I was silent!"));
+                        tiPhrase.getChildren().add(new TreeItem<>("I was silent!"));
                     } else
-                    tiPhrase.getChildren().add(new TreeItem<String>(vector.get(i).getPhrases().get(j).getPhrase()));
+                    tiPhrase.getChildren().add(new TreeItem<>(vector.get(i).getPhrases().get(j).getPhrase()));
                 }
             }
         }
         tvPerson = new TreeView<>(tiRoot);
- /*       MultipleSelectionModel<TreeItem<String>> tvSelModel = tvPerson.getSelectionModel();
-        tvSelModel.selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
-            public void changed(ObservableValue<? extends TreeItem<String>> changed, TreeItem<String> oldVal, TreeItem<String> newVal) {
-                if (newVal != null) {
-                    String path = newVal.getValue();
-                    TreeItem<String> tmp = newVal.getParent();
-                    while (tmp != null) {
-                        path = tmp.getValue() + " -> " + path;
-                        tmp = tmp.getParent();
-                    }
-                    response.setText("Selection is " + newVal.getValue() + "\n\nComplete path: \n" + path);
-                }
-            }
-        });  */
-        pane11.getChildren().addAll(tvPerson, response);
+        pane11.getChildren().add(tvPerson);
     }
+
+    /**
+     * This command does exit from programme.
+     */
     private static void exit() {
         System.out.println("Bye!");
         System.exit(0);
     }
-    private static void outVector() {
-        for (int i = 0; i < vector.size(); i++) {
-            System.out.println(i + " " + vector.get(i));
-        }
-    }
+
+    /**
+     * This command finds the minimum from the Collection.
+     */
     private static void getMin() {
         if (!vector.isEmpty()) {
             min = vector.get(0);
-            for (int k = 1; k < vector.size(); k++) {
-                if (min.compareTo(vector.get(k)) > 0) min = vector.get(k);
+            for (Person person : vector) {
+                if (min.compareTo(person) > 0) min = person;
             }
             System.out.println("min = " + min);
         } else {
@@ -468,11 +487,10 @@ public class Main extends Application{
      * This command removes the last element from the Collection.
      */
     private static void remove_last() {
-        if (vector.size() != 0) {
+        if (!vector.isEmpty()) {
             vector.remove(vector.lastElement());
-            bug = 1;
             System.out.println("Everything is good! :) (remove_last)");
-        } else bug = 2;
+        } else System.out.println("Vector is empty");
     }
 
     /**
@@ -501,21 +519,6 @@ public class Main extends Application{
     /**
      * This command reads all data from the file into Collection.
      */
-    private static void m(String [] strs, Person person) {
-        if (strs.length != 0) {
-            if (!strs[0].trim().equals("")) {
-                person.setName(strs[0].trim());
-                if (strs.length - 1 != 0) {
-                    for (int j = 1; j < strs.length; j++) {
-                        person.addPhrase(new Phrase(strs[j].trim()));
-                    }
-                }
-                vector.add(person);
-            } else {
-                System.out.println("Sorry, but person mush have a name");
-            }
-        }
-    }
     private static void load() {
         vector.removeAllElements();
         InputStreamReader in = null;
@@ -548,18 +551,34 @@ public class Main extends Application{
             try {
                 in.close();
             } catch (IOException e) {
-                System.out.println("Error with close in");
+                System.out.println("Error with close in 1");
             } catch (NullPointerException e) {
-                System.out.println("Error with close in");
+                System.out.println("Error with close in 2");
             }
         }
-        if (vector.size() != 0) {
-            bug = 1;
+        if (!vector.isEmpty())
             System.out.println("Everything is good! :) (load)");
-        } else bug = 2;
+    }
+    private static void m(String [] strs, Person person) {
+        if (strs.length != 0) {
+            if (!strs[0].trim().equals("")) {
+                person.setName(strs[0].trim());
+                if (strs.length - 1 != 0) {
+                    for (int j = 1; j < strs.length; j++) {
+                        person.addPhrase(new Phrase(strs[j].trim()));
+                    }
+                }
+                vector.add(person);
+            } else {
+                System.out.println("Sorry, but person must have a name");
+            }
+        }
     }
 
-    public static void save(){
+    /**
+     * This command saves all elements in file.
+     */
+    private static void save(){
         String str = "";
         FileWriter out = null;
         try {
@@ -609,7 +628,7 @@ public class Main extends Application{
             }
         } catch (JsonSyntaxException e) {
             System.out.println("Sorry, it's not JSON");
-            if(!"".equals(element)) {
+            if(!"".equals(element.getText())) {
                 Person person = new Person(element.getText());
                 if (min.compareTo(person) > 0) {
                     min = person;
@@ -624,10 +643,6 @@ public class Main extends Application{
                     phrase.setPromptText("Enter phrase " + (i+1));
                     pane10.getChildren().add(phrase);
                     phrase.setOnAction(event -> {
-
-                      //  remove_last();
-                      //  person.setPhrase((0),new Phrase(phrase.getText()));
-                      //  vector.add(person);
                         vector.get(vector.size()).setPhrase(i,new Phrase(phrase.getText()));
                         i++;
                         phrase.setText("");
@@ -647,8 +662,13 @@ public class Main extends Application{
     public static void main(String[] args) {
         launch(args);
     }
+
+    private static void outVector() {
+        for (int i = 0; i < vector.size(); i++) {
+            System.out.println(i + " " + vector.get(i));
+        }
+    }
+
 }
-
-
 
 //C:\Users\Elizabeth\Desktop\ИТМО\Программирование\Лабораторные\Лаба05\Proba.csv
