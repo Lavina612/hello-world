@@ -16,7 +16,8 @@ import javafx.scene.layout.*;
 import javafx.scene.image.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
-import javafx.stage.Stage;
+import javafx.stage.*;
+import javafx.stage.WindowEvent;
 
 /**
  * @author Elizabeth, P3111 :)
@@ -41,13 +42,18 @@ public class Main extends Application{
     private static Button save;
     private static Button update;
     private static Button enter;
-    private static Button closeAdd;
+    private static Button closeInteractive;
     private static FlowPane image;
     private static GridPane root;
+    private static AnchorPane pane10;
     private static FlowPane pane11;
     private static FlowPane pane20;
     private static TreeView<String> tvPerson = new TreeView<>();
     private static TextField add;
+    private static TextField indexField;
+    private static TextField change;
+    private static TextField phrase;
+    private static int i=0;
 
     public void start(Stage stage) {
         stage.setTitle("Laba06");
@@ -55,7 +61,7 @@ public class Main extends Application{
         root.setStyle("-fx-background-color: aliceblue");
         HBox hbox00 = new HBox(15);
         FlowPane pane01 = new FlowPane(10,10);
-        AnchorPane pane10 = new AnchorPane();
+        pane10 = new AnchorPane();
         pane11 = new FlowPane(10,10);
         pane11.getChildren().add(tvPerson);
         pane20 = new FlowPane(20,15);
@@ -138,103 +144,56 @@ public class Main extends Application{
         remove_last.relocate(15, 255);
         remove.relocate(15, 290);
         add_if_min.relocate(15, 325);
-        load.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                load();
-                getMin();
-                rewriting();
-            }
+        enter = new Button("Enter");
+        enter.relocate(440,230);
+        closeInteractive = new Button("Close");
+        closeInteractive.relocate(440,270);
+        load.setOnAction(event -> {
+            load();
+            getMin();
+            rewriting();
         });
-        remove_last.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        remove_last.setOnAction(event -> {
                 remove_last();
                 getMin();
                 rewriting();
-            }
         });
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                save();
-            }
-        });
+        save.setOnAction(event -> save());
         remove.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                enter = new Button("Enter");
-                enter.relocate(440,230);
-                TextField indexField = new TextField();
+                checking();
+                indexField = new TextField();
                 indexField.relocate(250,230);
                 indexField.setPromptText("Write number of element");
-                closeAdd = new Button("Close");
-                closeAdd.relocate(440,270);
-                pane10.getChildren().addAll(indexField, enter, closeAdd);
-                enter.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        index(indexField);
-                    }
-                });
-                indexField.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                       index(indexField);
-                    }
-                });
-                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        pane10.getChildren().removeAll(indexField, enter, closeAdd);
-                    }
-                });
+                pane10.getChildren().addAll(indexField, enter, closeInteractive);
+                enter.setOnAction(event1 -> index(indexField));
+                indexField.setOnAction(event1 -> index(indexField));
+                closeInteractive.setOnAction(event1 -> pane10.getChildren().removeAll(indexField, enter, closeInteractive));
             }
         });
         add_if_min.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                enter = new Button("Enter");
-                enter.relocate(440,230);
-                closeAdd = new Button("Close");
-                closeAdd.relocate(440,270);
-                TextField add = new TextField();
+                checking();
+                add = new TextField();
                 add.relocate(220,230);
                 add.setPrefColumnCount(16);
                 add.setPromptText("Enter name or JSON-person");
-                pane10.getChildren().addAll(add, enter, closeAdd);
-                enter.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        add_if_min(add);
-                    }
-                });
-                add.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        add_if_min(add);
-                    }
-                });
-                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        pane10.getChildren().removeAll(add, enter, closeAdd);
-                    }
-                });
-
+                pane10.getChildren().addAll(add, enter, closeInteractive);
+                enter.setOnAction( event1 -> add_if_min(add));
+                add.setOnAction( event1 -> add_if_min(add));
+                closeInteractive.setOnAction( event1 -> pane10.getChildren().removeAll(add, phrase, enter, closeInteractive));
             }
         });
         update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                TextField change = new TextField();
+                checking();
+                change = new TextField();
                 change.relocate(250,230);
                 change.setPromptText("Enter number of person");
-                enter = new Button("Enter");
-                enter.relocate(440,230);
-                closeAdd = new Button("Close");
-                closeAdd.relocate(440,270);
-                pane10.getChildren().addAll(change, enter, closeAdd);
+                pane10.getChildren().addAll(change, enter, closeInteractive);
                 enter.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -312,10 +271,10 @@ public class Main extends Application{
                         }
                     }
                 });
-                closeAdd.setOnAction(new EventHandler<ActionEvent>() {
+                closeInteractive.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        pane10.getChildren().removeAll(change, enter, closeAdd);
+                        pane10.getChildren().removeAll(change, enter, closeInteractive);
                     }
                 });
 
@@ -407,6 +366,20 @@ public class Main extends Application{
         Scene scene = new Scene(root, 850,600);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(new EventHandler<javafx.stage.WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                save();
+                System.exit(1);
+            }
+        });
+    }
+    public static void checking() {
+        if (pane10.getChildren().contains(indexField)) pane10.getChildren().remove(indexField);
+        if (pane10.getChildren().contains(enter)) pane10.getChildren().remove(enter);
+        if (pane10.getChildren().contains(closeInteractive)) pane10.getChildren().remove(closeInteractive);
+        if (pane10.getChildren().contains(add)) pane10.getChildren().remove(add);
+        if (pane10.getChildren().contains(change)) pane10.getChildren().remove(change);
     }
     public static void index(TextField indexField){
         try {
@@ -414,10 +387,10 @@ public class Main extends Application{
             Integer integer = new Integer(indexField.getText());
             remove(integer);
             indexField.setText("");
-            getMin();
-            rewriting();
         } catch (NumberFormatException e) {
-            System.out.println("Sorry, but you wrote a nonsense. Try again!");
+            if (indexField.getText().equals("")) System.out.println("You didn't write anything");
+            else            System.out.println("Sorry, but you wrote a nonsense. Try again!");
+            indexField.setText("");
         }
     }
     public static void imagination(ImageView a, ImageView b, ImageView c, ImageView d) {
@@ -506,24 +479,24 @@ public class Main extends Application{
      * This command removes the element from the Collection, which have this index.
      */
     private static void remove(int index) {
-        if (vector.size() == 0) bug = 2;
-        else {
+        if (vector.isEmpty()) {
+            System.out.println("Vector is empty");
+        } else {
             if (index > vector.size()) {
-                bug = 0;
                 System.out.println("Index more than elements in Collection");
-            }
-            else {
+            } else {
                 if (index < 0) {
-                    bug = 0;
                     System.out.println("Index less than elements in Collection");
                 } else {
                     vector.remove(index-1);
-                    bug = 1;
+                    getMin();
+                    rewriting();
                     System.out.println("Everything is good! :) (remove)");
                 }
             }
         }
     }
+
 
     /**
      * This command reads all data from the file into Collection.
@@ -642,30 +615,24 @@ public class Main extends Application{
                     min = person;
                     vector.addElement(person);
                     rewriting();
-                    element.setText("");
+                    pane10.getChildren().remove(element);
                     System.out.println("Everything is good! :) (add_if_min)");
                     System.out.println("min = " + min.getName());
-                    int i=1;
-  /*                  while (closeAdd.fire() == ) {
-                        element.setPromptText("Phrase " + i);
-                        enter.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                remove_last();
-                                person.addPhrase(new Phrase(element.getText()));
-                                element.setText("");
-                                rewriting();
-                            }
-                        });
-                        add.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                add_if_min(add);
-                            }
-                        });
-                        i++;
+                    phrase = new TextField();
+                    phrase.relocate(220,230);
+                    phrase.setPrefColumnCount(16);
+                    phrase.setPromptText("Enter phrase " + (i+1));
+                    pane10.getChildren().add(phrase);
+                    phrase.setOnAction(event -> {
 
-                    } */
+                      //  remove_last();
+                      //  person.setPhrase((0),new Phrase(phrase.getText()));
+                      //  vector.add(person);
+                        vector.get(vector.size()).setPhrase(i,new Phrase(phrase.getText()));
+                        i++;
+                        phrase.setText("");
+                        rewriting();
+                    });
                 } else {
                     System.out.println("Element is more than min");
                     element.setText("");
@@ -679,63 +646,6 @@ public class Main extends Application{
 
     public static void main(String[] args) {
         launch(args);
-
-        String s;
-        Scanner scanner = new Scanner(System.in);
-        load();
-        getMin();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-                                                 public void run() {
-                                                     save();
-                                                 }
-                                             }
-        );
-        System.out.println("'help' helps you :)");
-        while (scanner.hasNextLine() && !(s = scanner.nextLine()).trim().equals("exit")) {
-            s = s.trim();
-            char[] chars1 = s.toCharArray();
-            int counter = 0;
-            String s1;
-            String s2;
-            if (s.equals("help")) {
-                System.out.println("remove_last");
-                System.out.println("load");
-                System.out.println("remove {index}");
-                System.out.println("add_if_min {element in json}");
-                System.out.println("exit");
-            } else {
-                if (s.equals("load")) {
-                    load();
-                    getMin();
-                } else {
-                    if (s.equals("remove_last")) {
-                        remove_last();
-                        getMin();
-                    } else {
-                        for (char ch: chars1) {
-                            if (ch == ' ') counter = 1;
-                        }
-                        if (counter == 1) {
-                            s1 = s.substring(0, s.indexOf(' ')).trim();
-                            s2 = s.substring(s.indexOf(' ') + 1, s.length()).trim();
-                            if (s1.equals("remove")) {
-                                try {
-                                    Integer integer = new Integer(s2);
-                                    remove(integer);
-                                    getMin();
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Sorry, but you wrote a nonsense. Try again!");
-                                }
-                            }
-                                 else System.out.println(":( This command wasn't found. Try again!");
-
-                        } else System.out.println(":( This command not found. Try again!");
-                    }
-                }
-            }
-        }
-        System.out.println("Come back! :)");
-        outVector();
     }
 }
 
